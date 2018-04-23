@@ -186,25 +186,27 @@ namespace Transports
               {
                 switch (sentence.data.ssb.cf)
                 {
-                  case NMEASentence::SentenceData::SSB::LF:
-                    msg = new UsblPosition;
+                  case NMEASentence::SentenceData::SSB::LF:{
+                    UsblPosition *pos = new UsblPosition();
 
-                        dynamic_cast<IMC::UsblPosition*>(msg)->target = sentence.data.ssb.tid;
-                        dynamic_cast<IMC::UsblPosition*>(msg)->x = sentence.data.ssb.x;
-                        dynamic_cast<IMC::UsblPosition*>(msg)->y = sentence.data.ssb.y;
-                        dynamic_cast<IMC::UsblPosition*>(msg)->z = sentence.data.ssb.z;
-
-                        break;
-                  case NMEASentence::SentenceData::SSB::GEOD:
-                    msg = new UsblFix;
-
-                        dynamic_cast<IMC::UsblFix*>(msg)->target = sentence.data.ssb.tid;
-                        dynamic_cast<IMC::UsblFix*>(msg)->lat = Angles::radians(sentence.data.ssb.x);
-                        dynamic_cast<IMC::UsblFix*>(msg)->lon = Angles::radians(sentence.data.ssb.y);
-                        dynamic_cast<IMC::UsblFix*>(msg)->z_units = IMC::Z_DEPTH;
-                        dynamic_cast<IMC::UsblFix*>(msg)->z = sentence.data.ssb.z;
-
-                        break;
+                    pos->target = sentence.data.ssb.tid;
+                    pos->x = sentence.data.ssb.x;
+                    pos->y = sentence.data.ssb.y;
+                    pos->z = sentence.data.ssb.z;
+                    msg = pos;
+                    break;
+                  }
+                  case NMEASentence::SentenceData::SSB::GEOD: {
+                      UsblFixExtended *fix = new UsblFixExtended();
+                      fix->target = sentence.data.ssb.tid;
+                      fix->lat = Angles::radians(sentence.data.ssb.x);
+                      fix->lon = Angles::radians(sentence.data.ssb.y);
+                      fix->z_units = IMC::Z_DEPTH;
+                      fix->z = sentence.data.ssb.z;
+                      fix->accuracy = 5; // Set accuracy to 5meters
+                      msg = fix;
+                      break;
+                  }
                   default:
                     return std::auto_ptr<IMC::Message>(0);
                 }
@@ -218,11 +220,11 @@ namespace Transports
               if (sentence.type == SSA && sentence.data.ssa.status &&
                   sentence.data.ssa.cf == NMEASentence::SentenceData::SSA::LF)
               {
-                msg = new UsblAngles;
-
-                dynamic_cast<IMC::UsblAngles*>(msg)->target = sentence.data.ssa.tid;
-                dynamic_cast<IMC::UsblAngles*>(msg)->bearing = sentence.data.ssa.bearing;
-                dynamic_cast<IMC::UsblAngles*>(msg)->elevation = sentence.data.ssa.elevation;
+                UsblAngles *ang = new UsblAngles();
+                ang->target = sentence.data.ssa.tid;
+                ang->bearing = sentence.data.ssa.bearing;
+                ang->elevation = sentence.data.ssa.elevation;
+                msg = ang;
 
                 if (sentence.data.ssa.epoch_time > 0)
                   msg->setTimeStamp(sentence.data.ssa.epoch_time);
