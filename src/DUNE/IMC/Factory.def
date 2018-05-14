@@ -28,7 +28,7 @@
 //***************************************************************************
 // Automatically generated.                                                 *
 //***************************************************************************
-// IMC XML MD5: 6a9b936aa9d8b562b7ec1e628dcce54c                            *
+// IMC XML MD5: a6ed4536c13d4a21e8e09bc8ef4da807                            *
 //***************************************************************************
 
 MESSAGE(1, EntityState)
@@ -234,6 +234,8 @@ MESSAGE(491, Takeoff)
 MESSAGE(492, Land)
 MESSAGE(493, AutonomousSection)
 MESSAGE(494, FollowPoint)
+MESSAGE(495, Alignment)
+MESSAGE(496, StationKeepingExtended)
 MESSAGE(500, VehicleState)
 MESSAGE(501, VehicleCommand)
 MESSAGE(502, MonitorEntityState)
@@ -332,4 +334,5 @@ MESSAGE(904, OpticalBackscatter)
 MESSAGE(905, Tachograph)
 MESSAGE(906, ApmStatus)
 MESSAGE(907, SadcReadings)
+MESSAGE(908, DmsDetection)
 #undef MESSAGE

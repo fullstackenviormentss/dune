@@ -28,7 +28,7 @@
 //***************************************************************************
 // Automatically generated.                                                 *
 //***************************************************************************
-// IMC XML MD5: 6a9b936aa9d8b562b7ec1e628dcce54c                            *
+// IMC XML MD5: a6ed4536c13d4a21e8e09bc8ef4da807                            *
 //***************************************************************************
 
 #ifndef DUNE_IMC_DEFINITIONS_HPP_INCLUDED_
@@ -565,6 +565,17 @@ namespace DUNE
     class RestartSystem: public Message
     {
     public:
+      //! Restart Type.
+      enum RestartTypeEnum
+      {
+        //! Dune.
+        RSTYPE_DUNE = 1,
+        //! System.
+        RSTYPE_SYSTEM = 2
+      };
+
+      //! Restart Type.
+      uint8_t type;
 
       static uint16_t
       getIdStatic(void)
@@ -582,6 +593,9 @@ namespace DUNE
 
       void
       clear(void);
+
+      bool
+      fieldsEqual(const Message& msg__) const;
 
       int
       validate(void) const;
@@ -610,8 +624,11 @@ namespace DUNE
       unsigned
       getFixedSerializationSize(void) const
       {
-        return 0;
+        return 1;
       }
+
+      void
+      fieldsToJSON(std::ostream& os__, unsigned nindent__) const;
     };
 
     //! Device Calibration Control.
@@ -9358,7 +9375,9 @@ namespace DUNE
         //! Reset Schedules.
         PCC_OP_SCHED_RESET = 5,
         //! Save Current State.
-        PCC_OP_SAVE = 6
+        PCC_OP_SAVE = 6,
+        //! Restart.
+        PCC_OP_RESTART = 7
       };
 
       //! Channel Name.
@@ -10645,7 +10664,11 @@ namespace DUNE
         //! Aligned.
         AS_ALIGNED = 1,
         //! Not Supported.
-        AS_NOT_SUPPORTED = 2
+        AS_NOT_SUPPORTED = 2,
+        //! Aligning.
+        AS_ALIGNING = 3,
+        //! Wrong Medium.
+        AS_WRONG_MEDIUM = 4
       };
 
       //! State.
@@ -11848,7 +11871,9 @@ namespace DUNE
         //! Stop Braking.
         OP_STOP = 0,
         //! Start Braking.
-        OP_START = 1
+        OP_START = 1,
+        //! Revert Actuation.
+        OP_REVERT = 2
       };
 
       //! Operation.
@@ -13018,13 +13043,6 @@ namespace DUNE
     class StationKeeping: public Maneuver
     {
     public:
-      //! Flags.
-      enum FlagsBits
-      {
-        //! Keep safe behaviour.
-        FLG_KEEP_SAFE = 0x01
-      };
-
       //! Latitude WGS-84.
       fp64_t lat;
       //! Longitude WGS-84.
@@ -13041,12 +13059,6 @@ namespace DUNE
       fp32_t speed;
       //! Speed Units.
       uint8_t speed_units;
-      //! PopUp Period.
-      uint16_t popup_period;
-      //! PopUp Duration.
-      uint16_t popup_duration;
-      //! Flags.
-      uint8_t flags;
       //! Custom settings for maneuver.
       std::string custom;
 
@@ -13097,7 +13109,7 @@ namespace DUNE
       unsigned
       getFixedSerializationSize(void) const
       {
-        return 37;
+        return 32;
       }
 
       unsigned
@@ -14626,7 +14638,11 @@ namespace DUNE
         //! Near in the horizontal plane.
         PROX_XY_NEAR = 0x02,
         //! Near in the vertical plane.
-        PROX_Z_NEAR = 0x04
+        PROX_Z_NEAR = 0x04,
+        //! Unreachable in the horizontal plane.
+        PROX_XY_UNREACHABLE = 0x08,
+        //! Unreachable in the vertical plane.
+        PROX_Z_UNREACHABLE = 0x10
       };
 
       //! Controlling Source.
@@ -16039,6 +16055,179 @@ namespace DUNE
       getVariableSerializationSize(void) const
       {
         return IMC::getSerializationSize(target) + IMC::getSerializationSize(custom);
+      }
+
+      void
+      fieldsToJSON(std::ostream& os__, unsigned nindent__) const;
+    };
+
+    //! Alignment Maneuver.
+    class Alignment: public Maneuver
+    {
+    public:
+      //! Timeout.
+      uint16_t timeout;
+      //! Latitude WGS-84.
+      fp64_t lat;
+      //! Longitude WGS-84.
+      fp64_t lon;
+      //! Speed.
+      fp32_t speed;
+      //! Speed Units.
+      uint8_t speed_units;
+      //! Custom settings for maneuver.
+      std::string custom;
+
+      static uint16_t
+      getIdStatic(void)
+      {
+        return 495;
+      }
+
+      Alignment(void);
+
+      Alignment*
+      clone(void) const
+      {
+        return new Alignment(*this);
+      }
+
+      void
+      clear(void);
+
+      bool
+      fieldsEqual(const Message& msg__) const;
+
+      int
+      validate(void) const;
+
+      uint8_t*
+      serializeFields(uint8_t* bfr__) const;
+
+      uint16_t
+      deserializeFields(const uint8_t* bfr__, uint16_t size__);
+
+      uint16_t
+      reverseDeserializeFields(const uint8_t* bfr__, uint16_t size__);
+
+      uint16_t
+      getId(void) const
+      {
+        return Alignment::getIdStatic();
+      }
+
+      const char*
+      getName(void) const
+      {
+        return "Alignment";
+      }
+
+      unsigned
+      getFixedSerializationSize(void) const
+      {
+        return 23;
+      }
+
+      unsigned
+      getVariableSerializationSize(void) const
+      {
+        return IMC::getSerializationSize(custom);
+      }
+
+      void
+      fieldsToJSON(std::ostream& os__, unsigned nindent__) const;
+    };
+
+    //! Station Keeping Extended.
+    class StationKeepingExtended: public Maneuver
+    {
+    public:
+      //! Flags.
+      enum FlagsBits
+      {
+        //! Keep safe behaviour.
+        FLG_KEEP_SAFE = 0x01
+      };
+
+      //! Latitude WGS-84.
+      fp64_t lat;
+      //! Longitude WGS-84.
+      fp64_t lon;
+      //! Z Reference.
+      fp32_t z;
+      //! Z Units.
+      uint8_t z_units;
+      //! Radius.
+      fp32_t radius;
+      //! Duration.
+      uint16_t duration;
+      //! Speed.
+      fp32_t speed;
+      //! Speed Units.
+      uint8_t speed_units;
+      //! PopUp Period.
+      uint16_t popup_period;
+      //! PopUp Duration.
+      uint16_t popup_duration;
+      //! Flags.
+      uint8_t flags;
+      //! Custom settings for maneuver.
+      std::string custom;
+
+      static uint16_t
+      getIdStatic(void)
+      {
+        return 496;
+      }
+
+      StationKeepingExtended(void);
+
+      StationKeepingExtended*
+      clone(void) const
+      {
+        return new StationKeepingExtended(*this);
+      }
+
+      void
+      clear(void);
+
+      bool
+      fieldsEqual(const Message& msg__) const;
+
+      int
+      validate(void) const;
+
+      uint8_t*
+      serializeFields(uint8_t* bfr__) const;
+
+      uint16_t
+      deserializeFields(const uint8_t* bfr__, uint16_t size__);
+
+      uint16_t
+      reverseDeserializeFields(const uint8_t* bfr__, uint16_t size__);
+
+      uint16_t
+      getId(void) const
+      {
+        return StationKeepingExtended::getIdStatic();
+      }
+
+      const char*
+      getName(void) const
+      {
+        return "StationKeepingExtended";
+      }
+
+      unsigned
+      getFixedSerializationSize(void) const
+      {
+        return 37;
+      }
+
+      unsigned
+      getVariableSerializationSize(void) const
+      {
+        return IMC::getSerializationSize(custom);
       }
 
       void
@@ -21787,7 +21976,11 @@ namespace DUNE
         //! Invalid address.
         UTS_INV_ADDR = 4,
         //! In Progress.
-        UTS_IP = 5
+        UTS_IP = 5,
+        //! Unsupported operation.
+        UTS_UNSUPPORTED = 6,
+        //! Invalid transmission size.
+        UTS_INV_SIZE = 7
       };
 
       //! Sequence Id.
@@ -24189,6 +24382,97 @@ namespace DUNE
 
       void
       setValueFP(fp64_t val);
+
+      void
+      fieldsToJSON(std::ostream& os__, unsigned nindent__) const;
+    };
+
+    //! DMS Detection.
+    class DmsDetection: public Message
+    {
+    public:
+      //! Channel 1.
+      fp32_t ch01;
+      //! Channel 2.
+      fp32_t ch02;
+      //! Channel 3.
+      fp32_t ch03;
+      //! Channel 4.
+      fp32_t ch04;
+      //! Channel 5.
+      fp32_t ch05;
+      //! Channel 6.
+      fp32_t ch06;
+      //! Channel 7.
+      fp32_t ch07;
+      //! Channel 8.
+      fp32_t ch08;
+      //! Channel 9.
+      fp32_t ch09;
+      //! Channel 10.
+      fp32_t ch10;
+      //! Channel 11.
+      fp32_t ch11;
+      //! Channel 12.
+      fp32_t ch12;
+      //! Channel 13.
+      fp32_t ch13;
+      //! Channel 14.
+      fp32_t ch14;
+      //! Channel 15.
+      fp32_t ch15;
+      //! Channel 16.
+      fp32_t ch16;
+
+      static uint16_t
+      getIdStatic(void)
+      {
+        return 908;
+      }
+
+      DmsDetection(void);
+
+      DmsDetection*
+      clone(void) const
+      {
+        return new DmsDetection(*this);
+      }
+
+      void
+      clear(void);
+
+      bool
+      fieldsEqual(const Message& msg__) const;
+
+      int
+      validate(void) const;
+
+      uint8_t*
+      serializeFields(uint8_t* bfr__) const;
+
+      uint16_t
+      deserializeFields(const uint8_t* bfr__, uint16_t size__);
+
+      uint16_t
+      reverseDeserializeFields(const uint8_t* bfr__, uint16_t size__);
+
+      uint16_t
+      getId(void) const
+      {
+        return DmsDetection::getIdStatic();
+      }
+
+      const char*
+      getName(void) const
+      {
+        return "DmsDetection";
+      }
+
+      unsigned
+      getFixedSerializationSize(void) const
+      {
+        return 64;
+      }
 
       void
       fieldsToJSON(std::ostream& os__, unsigned nindent__) const;
